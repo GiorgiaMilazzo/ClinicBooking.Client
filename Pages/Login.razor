@@ -1,0 +1,63 @@
+@page "/login"
+@using System.ComponentModel.DataAnnotations
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Accedi</PageTitle>
+
+<h1>Accedi</h1>
+
+<EditForm Model="model" OnValidSubmit="LoginAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="model.Email" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <InputText id="password" type="password" class="form-control" @bind-Value="model.Password" />
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <button class="btn btn-primary" type="submit" disabled="@isLoading">
+        @(isLoading ? "Accesso in corso..." : "Accedi")
+    </button>
+</EditForm>
+
+@code {
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
+    private readonly LoginModel model = new();
+    private bool isLoading;
+    private string? errorMessage;
+
+    private async Task LoginAsync()
+    {
+        isLoading = true;
+        errorMessage = await AuthService.LoginAsync(model.Email, model.Password);
+        isLoading = false;
+
+        if (errorMessage is null)
+        {
+            var destination = string.IsNullOrWhiteSpace(ReturnUrl) ? "/" : ReturnUrl;
+            NavigationManager.NavigateTo(destination!);
+        }
+    }
+
+    private sealed class LoginModel
+    {
+        [Required(ErrorMessage = "Inserisci l'email.")]
+        [EmailAddress(ErrorMessage = "Inserisci un'email valida.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Inserisci la password.")]
+        public string Password { get; set; } = string.Empty;
+    }
+}

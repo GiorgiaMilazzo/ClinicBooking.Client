@@ -1,0 +1,15 @@
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Clinic Booking</h1>
+
+<AuthorizeView>
+    <Authorized Context="authContext">
+        <p>Benvenuta/o, @authContext.User.Identity?.Name.</p>
+        <p>Ruolo: <strong>@authContext.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</strong></p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Accedi per usare la gestione delle prenotazioni.</p>
+    </NotAuthorized>
+</AuthorizeView>
