@@ -2,14 +2,41 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Clinic Booking</h1>
-
 <AuthorizeView>
     <Authorized Context="authContext">
-        <p>Benvenuta/o, @authContext.User.Identity?.Name.</p>
-        <p>Ruolo: <strong>@authContext.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</strong></p>
+        <div class="mb-4">
+            <h1>Benvenuta/o, @authContext.User.Identity?.Name</h1>
+            <p class="lead mb-0">Ruolo: <strong>@authContext.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</strong></p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="h5">Appuntamenti</h2>
+                        <p>Consulta gli appuntamenti e crea nuove prenotazioni.</p>
+                        <a class="btn btn-primary" href="appointments">Vai agli appuntamenti</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="h5">Nuova prenotazione</h2>
+                        <p>Scegli medico, paziente, data e ora per una nuova visita.</p>
+                        <a class="btn btn-primary" href="appointments#new-appointment">Crea appuntamento</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <p>Accedi per usare la gestione delle prenotazioni.</p>
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h1>ClinicBooking</h1>
+                <p class="lead">Gestisci medici, pazienti e appuntamenti della tua clinica in un unico posto.</p>
+                <p>L'accesso è riservato agli amministratori della clinica.</p>
+                <a class="btn btn-primary" href="login">Accedi</a>
+            </div>
+        </div>
     </NotAuthorized>
 </AuthorizeView>

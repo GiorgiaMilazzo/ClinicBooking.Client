@@ -9,7 +9,7 @@
 
 <h1>Appuntamenti</h1>
 
-<section class="mb-4">
+<section id="new-appointment" class="card shadow-sm border-0 mb-4 p-4">
     <h2>Nuovo appuntamento</h2>
 
     @if (isFormLoading)
@@ -80,27 +80,32 @@ else if (appointments.Count == 0)
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Data e ora</th>
-                <th>Medico</th>
-                <th>Paziente</th>
-                <th>Stato</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var appointment in appointments)
-            {
-                <tr>
-                    <td>@appointment.DateTimeAppointment.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@appointment.DoctorName</td>
-                    <td>@appointment.PatientName</td>
-                    <td>@GetStatusLabel(appointment.Status)</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <section class="card shadow-sm border-0 p-4">
+        <h2>Elenco appuntamenti</h2>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Data e ora</th>
+                        <th>Medico</th>
+                        <th>Paziente</th>
+                        <th>Stato</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appointment in appointments)
+                    {
+                        <tr>
+                            <td>@appointment.DateTimeAppointment.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@appointment.DoctorName</td>
+                            <td>@appointment.PatientName</td>
+                            <td><span class="badge @GetStatusBadgeClass(appointment.Status)">@GetStatusLabel(appointment.Status)</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
 }
 
 @code {
@@ -193,6 +198,17 @@ else
             AppointmentStatus.Confirmed => "Confermato",
             AppointmentStatus.Complete => "Completato",
             _ => "Stato non riconosciuto"
+        };
+    }
+
+    private static string GetStatusBadgeClass(AppointmentStatus status)
+    {
+        return status switch
+        {
+            AppointmentStatus.Booked => "text-bg-secondary",
+            AppointmentStatus.Confirmed => "text-bg-primary",
+            AppointmentStatus.Complete => "text-bg-success",
+            _ => "text-bg-light"
         };
     }
 }

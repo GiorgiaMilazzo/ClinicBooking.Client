@@ -20,6 +20,12 @@ Alla fine della Fase 1 il client permette di:
 - mostrare date e ore nel formato esplicito `dd/MM/yyyy HH:mm`;
 - mostrare gli stati `Prenotato`, `Confermato` e `Completato`;
 - gestire errori HTTP, risposte `ProblemDetails` ed errori di connessione.
+- registrare nuovi account con la pagina `Register`, anticipata dalla Fase 2,
+  mostrando il messaggio sul ruolo `doctor` dopo la registrazione;
+- usare una grafica restilizzata con palette sanitaria, card Bootstrap e badge
+  colorati per gli stati;
+- mostrare nella Home una presentazione dell'app per gli utenti anonimi;
+- mostrare la pagina `NotFound` in italiano.
 
 Screenshot da inserire:
 
@@ -34,24 +40,40 @@ cancellazioni, non è stata iniziata.
 
 ## 2. Perché frontend e backend sono separati
 
-Frontend e backend sono due applicazioni indipendenti, ognuna nella sua cartella
-e nella sua repository. Il backend è disponibile qui:
+Ho sempre lavorato su progetti contenuti in un'unica repository, cioè in una
+struttura monorepo. In questo progetto ho scelto volutamente due repository
+separate per provare un'architettura diversa e capirne meglio vantaggi e costi.
+Il backend è disponibile qui:
 [ClinicBooking.Api](https://github.com/GiorgiaMilazzo/ClinicBooking.Api).
-Le applicazioni si parlano solo tramite richieste HTTP e JSON.
 
-Ho scelto questa struttura perché volevo provare un modo di costruire un'app,
-diverso dal tenere tutto in un unico progetto. I vantaggi sono:
+Il backend era già funzionante e testato. Tenerlo separato mi ha permesso di
+sviluppare il frontend senza rischiare di romperlo. Il frontend dipende solo
+dal contratto dell'API: endpoint, struttura dei JSON e codici di risposta; non
+dipende direttamente dal codice del backend. Le due applicazioni comunicano
+tramite richieste HTTP e JSON.
 
-- frontend e backend possono essere sviluppati e modificati separatamente;
-- lo stesso backend può servire un altro client, per esempio un'app mobile;
-- le responsabilità dell'interfaccia e delle regole applicative restano
-  separate.
+I vantaggi principali sono:
 
-Ci sono anche dei costi:
+- sviluppo indipendente;
+- versionamento indipendente;
+- deploy indipendente;
+- possibilità di usare lo stesso backend per altri client, per esempio un'app
+  mobile;
+- separazione netta tra responsabilità dell'interfaccia e responsabilità delle
+  regole applicative.
 
-- bisogna avviare due progetti insieme;
+I costi che ho incontrato davvero sono:
+
+- i DTO sono duplicati nel client nella cartella `Models/`, quindi se cambia un
+  campo nel backend devo aggiornarlo manualmente anche qui;
 - bisogna configurare il CORS nel backend;
-- bisogna mantenere coerenti i contratti JSON tra client e API.
+- bisogna avviare due progetti insieme;
+- una modifica che coinvolge entrambi i progetti richiede due commit in due
+  repository diverse.
+
+In un progetto più grande valuterei un progetto condiviso o un pacchetto NuGet
+per i DTO, oppure la generazione automatica del client a partire dalla
+specifica OpenAPI.
 
 ## 3. Come avviare backend e frontend
 

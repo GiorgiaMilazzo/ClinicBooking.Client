@@ -1,0 +1,72 @@
+@page "/register"
+@using System.ComponentModel.DataAnnotations
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Registrati</PageTitle>
+
+<h1>Registrati</h1>
+
+<EditForm Model="model" OnValidSubmit="RegisterAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label" for="userName">Nome utente</label>
+        <InputText id="userName" class="form-control" @bind-Value="model.UserName" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="model.Email" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <InputText id="password" type="password" class="form-control" @bind-Value="model.Password" />
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <button class="btn btn-primary" type="submit" disabled="@isLoading">
+        @(isLoading ? "Registrazione in corso..." : "Registrati")
+    </button>
+</EditForm>
+
+@code {
+    private readonly RegisterModel model = new();
+    private bool isLoading;
+    private string? errorMessage;
+
+    private async Task RegisterAsync()
+    {
+        isLoading = true;
+        errorMessage = await AuthService.RegisterAsync(
+            model.UserName,
+            model.Email,
+            model.Password);
+        isLoading = false;
+
+        if (errorMessage is null)
+        {
+            var message = Uri.EscapeDataString(
+                "Registrazione completata. Il tuo account ha il ruolo doctor: per gestire i dati serve che un amministratore lo abiliti.");
+            NavigationManager.NavigateTo($"/login?message={message}");
+        }
+    }
+
+    private sealed class RegisterModel
+    {
+        [Required(ErrorMessage = "Inserisci il nome utente.")]
+        public string UserName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Inserisci l'email.")]
+        [EmailAddress(ErrorMessage = "Inserisci un'email valida.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Inserisci la password.")]
+        [MinLength(6, ErrorMessage = "La password deve contenere almeno 6 caratteri.")]
+        public string Password { get; set; } = string.Empty;
+    }
+}
